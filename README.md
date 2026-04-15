@@ -56,5 +56,5 @@ Los 5 archivos HTML pasan el validador oficial de HTML5 del W3C sin errores ni a
 
 ## Cómo probar
 
-Basta con abrir `registro.html` en cualquier navegador moderno. Probado en Chrome y Firefox, y en distintas resoluciones de pantalla gracias a la configuración de `viewport` en cada página.
+Basta con abrir `registro.html` en cualquier navegador moderno. Probado en Chrome y Safari, y en distintas resoluciones de pantalla gracias a la configuración de `viewport` en cada página.
 

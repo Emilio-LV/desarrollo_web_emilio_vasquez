@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actividades DCC - Informar Actividad</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <nav>
+    <a class="titulo-nav" href="index.html">Actividades DCC</a>
+    <a href="actividades.html">Informar Actividad</a>
+    <a href="listado.html">Listado Miembros</a>
+    <a href="indicadores.html">Indicadores</a>
+  </nav>
+
+  <main>
+    <h1>Informar Actividad</h1>
+
+    <form id="form-actividad">
+      <!-- Datos de la actividad -->
+      <fieldset>
+        <legend>Datos de la Actividad</legend>
+
+        <div class="campo" id="campo-nombre-act">
+          <label for="nombre-act">Nombre de la actividad <span class="obligatorio">*</span></label>
+          <input type="text" id="nombre-act" name="nombre-act">
+          <span class="msg-error">Ingrese el nombre de la actividad (entre 3 y 200 caracteres).</span>
+        </div>
+
+        <div class="campo" id="campo-tipo-act">
+          <label for="tipo-act">Tipo de actividad <span class="obligatorio">*</span></label>
+          <select id="tipo-act" name="tipo-act">
+            <option value="">-- Seleccione --</option>
+            <option value="artistica">Artística</option>
+            <option value="deportiva">Deportiva</option>
+            <option value="tecnologica">Tecnológica</option>
+            <option value="social">Social</option>
+            <option value="recreativa">Recreativa</option>
+          </select>
+          <span class="msg-error">Seleccione un tipo de actividad.</span>
+        </div>
+
+        <div class="campo" id="campo-descripcion">
+          <label for="descripcion">Descripción <small>(opcional, máx. 500 caracteres)</small></label>
+          <textarea id="descripcion" name="descripcion" rows="3" maxlength="500"></textarea>
+          <span class="msg-error">La descripción no debe superar los 500 caracteres.</span>
+        </div>
+      </fieldset>
+
+      <!-- Horarios -->
+      <fieldset>
+        <legend>Horarios</legend>
+
+        <div class="campo" id="campo-dias">
+          <label>Días de la semana <span class="obligatorio">*</span></label>
+          <div class="grupo-dias">
+            <label><input type="checkbox" name="dias" value="lunes" data-nombre="Lunes"> Lunes</label>
+            <label><input type="checkbox" name="dias" value="martes" data-nombre="Martes"> Martes</label>
+            <label><input type="checkbox" name="dias" value="miercoles" data-nombre="Miércoles"> Miércoles</label>
+            <label><input type="checkbox" name="dias" value="jueves" data-nombre="Jueves"> Jueves</label>
+            <label><input type="checkbox" name="dias" value="viernes" data-nombre="Viernes"> Viernes</label>
+            <label><input type="checkbox" name="dias" value="sabado" data-nombre="Sábado"> Sábado</label>
+            <label><input type="checkbox" name="dias" value="domingo" data-nombre="Domingo"> Domingo</label>
+          </div>
+          <span class="msg-error">Seleccione al menos un día.</span>
+        </div>
+
+        <!-- Contenedor donde aparecen los horarios por día -->
+        <div id="horarios-por-dia"></div>
+      </fieldset>
+
+      <!-- Archivos y enlaces -->
+      <fieldset>
+        <legend>Archivos y Enlaces</legend>
+
+        <div class="campo" id="campo-archivo">
+          <label for="archivo">Fotos o videos de la actividad <span class="obligatorio">*</span> <small>(puede seleccionar varios)</small></label>
+          <input type="file" id="archivo" name="archivo" accept="image/*,video/*" multiple>
+          <span class="msg-error">Debe adjuntar al menos un archivo de imagen o video.</span>
+        </div>
+
+        <div class="campo" id="campo-enlace">
+          <label for="enlace">Enlace a contenido propio <span class="obligatorio">*</span></label>
+          <input type="url" id="enlace" name="enlace" placeholder="https://ejemplo.com/mi-actividad">
+          <span class="msg-error">Ingrese una URL válida (debe comenzar con http:// o https://).</span>
+        </div>
+      </fieldset>
+
+      <button type="button" id="btn-enviar-actividad">Enviar Actividad</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>CC5002 - Desarrollo Web - Universidad de Chile</p>
+  </footer>
+
+  <script src="js/validacion-actividad.js"></script>
+</body>
+</html>

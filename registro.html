@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actividades DCC - Registro</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+<body>
+  <nav>
+    <a class="titulo-nav" href="registro.html">Actividades DCC</a>
+  </nav>
+
+  <main>
+    <h1>Registro de Miembros</h1>
+
+    <form id="form-registro">
+      <!-- Datos personales -->
+      <fieldset>
+        <legend>Datos Personales</legend>
+
+        <div class="campo" id="campo-nombre">
+          <label for="nombre">Nombre <span class="obligatorio">*</span></label>
+          <input type="text" id="nombre" name="nombre">
+          <span class="msg-error">Ingrese un nombre válido (solo letras, entre 2 y 100 caracteres).</span>
+        </div>
+
+        <div class="campo" id="campo-apellido">
+          <label for="apellido">Apellido <span class="obligatorio">*</span></label>
+          <input type="text" id="apellido" name="apellido">
+          <span class="msg-error">Ingrese un apellido válido (solo letras, entre 2 y 100 caracteres).</span>
+        </div>
+
+        <div class="campo" id="campo-email">
+          <label for="email">Correo electrónico <span class="obligatorio">*</span></label>
+          <input type="email" id="email" name="email">
+          <span class="msg-error">Ingrese un correo válido (ej: usuario@dominio.com).</span>
+        </div>
+
+        <div class="campo" id="campo-telefono">
+          <label for="telefono">Teléfono <span class="obligatorio">*</span></label>
+          <input type="tel" id="telefono" name="telefono" placeholder="+56912345678">
+          <span class="msg-error">Ingrese un teléfono válido (formato +569XXXXXXXX, 12 dígitos).</span>
+        </div>
+      </fieldset>
+
+      <!-- Tipo de miembro y campos condicionales -->
+      <fieldset>
+        <legend>Tipo de Miembro</legend>
+
+        <div class="campo" id="campo-tipo">
+          <label for="tipo">Seleccione su tipo <span class="obligatorio">*</span></label>
+          <select id="tipo" name="tipo">
+            <option value="">-- Seleccione --</option>
+            <option value="pregrado">Estudiante de Pregrado</option>
+            <option value="postgrado">Estudiante de Postgrado</option>
+            <option value="funcionario">Funcionario/a</option>
+            <option value="academico">Académico/a</option>
+          </select>
+          <span class="msg-error">Seleccione un tipo de miembro.</span>
+        </div>
+
+        <div id="campos-pregrado" class="campos-tipo">
+          <div class="campo" id="campo-anio-ingreso">
+            <label for="anio-ingreso">Año de ingreso <span class="obligatorio">*</span></label>
+            <input type="number" id="anio-ingreso" name="anio-ingreso" placeholder="2024">
+            <span class="msg-error">Ingrese un año válido (ej: 2020).</span>
+          </div>
+        </div>
+
+        <div id="campos-postgrado" class="campos-tipo">
+          <div class="campo" id="campo-programa">
+            <label for="programa">Programa <span class="obligatorio">*</span></label>
+            <select id="programa" name="programa">
+              <option value="">-- Seleccione --</option>
+              <option value="magister">Magíster</option>
+              <option value="doctorado">Doctorado</option>
+            </select>
+            <span class="msg-error">Seleccione un programa.</span>
+          </div>
+          <div class="campo" id="campo-area-investigacion">
+            <label for="area-investigacion">Área de investigación <small>(opcional, máx. 200 caracteres)</small></label>
+            <input type="text" id="area-investigacion" name="area-investigacion" maxlength="200">
+            <span class="msg-error">El área de investigación no debe superar los 200 caracteres.</span>
+          </div>
+        </div>
+
+        <div id="campos-funcionario" class="campos-tipo">
+          <div class="campo" id="campo-cargo">
+            <label for="cargo">Cargo <span class="obligatorio">*</span></label>
+            <input type="text" id="cargo" name="cargo">
+            <span class="msg-error">Ingrese su cargo (solo letras, entre 2 y 200 caracteres).</span>
+          </div>
+          <div class="campo" id="campo-unidad">
+            <label for="unidad">Unidad o Área <small>(opcional, máx. 200 caracteres)</small></label>
+            <input type="text" id="unidad" name="unidad" maxlength="200">
+            <span class="msg-error">La unidad o área no debe superar los 200 caracteres.</span>
+          </div>
+        </div>
+
+        <div id="campos-academico" class="campos-tipo">
+          <div class="campo" id="campo-departamento">
+            <label for="departamento">Departamento <span class="obligatorio">*</span></label>
+            <input type="text" id="departamento" name="departamento">
+            <span class="msg-error">Ingrese su departamento (solo letras, entre 2 y 200 caracteres).</span>
+          </div>
+          <div class="campo" id="campo-especialidad">
+            <label for="especialidad">Área de especialización <small>(opcional, máx. 200 caracteres)</small></label>
+            <input type="text" id="especialidad" name="especialidad" maxlength="200">
+            <span class="msg-error">El área de especialización no debe superar los 200 caracteres.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <button type="button" id="btn-registrar">Registrar</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>CC5002 - Desarrollo Web - Universidad de Chile</p>
+  </footer>
+
+  <script src="js/validacion-registro.js"></script>
+</body>
+</html>

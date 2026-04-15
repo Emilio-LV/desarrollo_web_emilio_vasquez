@@ -1,0 +1,532 @@
+/* === ESTILOS GENERALES === */
+:root {
+  --color-primario: #2c3e50;
+  --color-secundario: #3498db;
+  --color-fondo: #f5f6fa;
+  --color-borde: #dcdde1;
+  --color-error: #e74c3c;
+  --color-exito: #27ae60;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background-color: var(--color-fondo);
+  color: var(--color-primario);
+}
+
+/* === NAVEGACION === */
+nav {
+  background-color: var(--color-primario);
+  padding: 0.8em 1.5em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1em;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0.4em 0.8em;
+  border-radius: 4px;
+}
+
+nav a:hover {
+  background-color: var(--color-secundario);
+}
+
+nav .titulo-nav {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-right: auto;
+}
+
+/* === CONTENIDO PRINCIPAL === */
+main {
+  max-width: 900px;
+  margin: 2em auto;
+  padding: 0 1.5em;
+}
+
+h1 {
+  border-bottom: 2px solid var(--color-secundario);
+  padding-bottom: 0.3em;
+}
+
+/* === FORMULARIOS === */
+form fieldset {
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 1.2em;
+  margin-bottom: 1.5em;
+}
+
+form legend {
+  font-weight: bold;
+  padding: 0 0.5em;
+  color: var(--color-secundario);
+}
+
+form .campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
+form .campo label {
+  margin-bottom: 0.3em;
+  font-size: 0.95em;
+}
+
+form .campo label .obligatorio {
+  color: var(--color-error);
+  font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="tel"],
+form input[type="url"],
+form input[type="number"],
+form input[type="date"],
+form input[type="time"],
+form input[type="file"],
+form select,
+form textarea {
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 0.5em;
+  font-size: 0.95em;
+  background-color: white;
+}
+
+form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+form .campo-error input,
+form .campo-error select,
+form .campo-error textarea {
+  border-color: var(--color-error);
+  box-shadow: 0 0 4px rgba(231, 76, 60, 0.4);
+}
+
+form .msg-error {
+  color: var(--color-error);
+  font-size: 0.85em;
+  margin-top: 0.2em;
+  display: none;
+}
+
+form .campo-error .msg-error {
+  display: block;
+}
+
+/* === BOTONES === */
+button, .boton {
+  background-color: var(--color-secundario);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6em 1.5em;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+button:hover, .boton:hover {
+  background-color: #2980b9;
+}
+
+/* === TABLAS === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+  background-color: white;
+}
+
+th, td {
+  border: 1px solid var(--color-borde);
+  padding: 0.6em 0.8em;
+  text-align: left;
+}
+
+th {
+  background-color: var(--color-primario);
+  color: white;
+  cursor: pointer;
+}
+
+th:hover {
+  background-color: var(--color-secundario);
+}
+
+/* === FILTROS Y CONTROLES === */
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.controles label {
+  font-size: 0.95em;
+}
+
+.controles select {
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 0.4em;
+}
+
+/* === PAGINACION === */
+.paginacion {
+  display: flex;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 1em;
+}
+
+.paginacion button {
+  padding: 0.4em 0.8em;
+  font-size: 0.9em;
+}
+
+.paginacion .pagina-activa {
+  background-color: var(--color-primario);
+}
+
+/* === TARJETAS RESUMEN === */
+.tarjetas-resumen {
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+  margin-bottom: 1.5em;
+}
+
+.tarjeta {
+  flex: 1;
+  min-width: 150px;
+  background-color: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tarjeta-icono {
+  font-size: 1.8em;
+  margin-bottom: 0.3em;
+}
+
+.tarjeta-valor {
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--color-primario);
+}
+
+.tarjeta-titulo {
+  font-size: 0.85em;
+  color: #7f8c8d;
+  margin-top: 0.2em;
+}
+
+/* === SECCION INDICADORES === */
+.indicador-seccion {
+  background-color: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  padding: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.indicador-seccion h2 {
+  margin-top: 0;
+  color: var(--color-secundario);
+  font-size: 1.1em;
+}
+
+/* === GRAFICO TORTA === */
+.grafico-torta-contenedor {
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 1em 0;
+}
+
+.torta {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.torta-leyenda {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.9em;
+}
+
+.leyenda-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* === GRAFICOS BARRAS VERTICALES (mejorado) === */
+.grafico-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5em;
+  height: 220px;
+  border-left: 2px solid var(--color-borde);
+  border-bottom: 2px solid var(--color-borde);
+  padding: 0 1em 0 0.5em;
+  margin: 1em 0;
+}
+
+.barra-grupo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.barra {
+  width: 44px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.4s ease;
+}
+
+.barra:hover {
+  opacity: 0.85;
+}
+
+.barra-numero {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: var(--color-primario);
+  margin-bottom: 0.3em;
+}
+
+.barra-etiqueta {
+  margin-top: 0.5em;
+  font-size: 0.8em;
+  text-align: center;
+  color: #7f8c8d;
+}
+
+/* === GRAFICOS BARRAS HORIZONTALES (ranking) === */
+.grafico-barras-h {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  padding: 0.5em 0;
+}
+
+.barra-h-fila {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+}
+
+.barra-h-etiqueta {
+  width: 100px;
+  font-size: 0.9em;
+  text-align: right;
+  color: var(--color-primario);
+  flex-shrink: 0;
+}
+
+.barra-h-contenedor {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.barra-h {
+  height: 28px;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.barra-h:hover {
+  opacity: 0.85;
+}
+
+.barra-h-valor {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: var(--color-primario);
+}
+
+/* === MAPA DE CALOR === */
+.heatmap-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 1em 0;
+}
+
+.heatmap-fila {
+  display: flex;
+  gap: 3px;
+}
+
+.heatmap-dia {
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.5em;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: var(--color-primario);
+  flex-shrink: 0;
+}
+
+.heatmap-header {
+  flex: 1;
+  text-align: center;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #7f8c8d;
+  padding: 0.3em 0;
+}
+
+.heatmap-celda {
+  flex: 1;
+  height: 42px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  transition: opacity 0.2s;
+  cursor: default;
+}
+
+.heatmap-celda:hover {
+  opacity: 0.8;
+  outline: 2px solid var(--color-primario);
+}
+
+.indicador-descripcion {
+  font-size: 0.85em;
+  color: #7f8c8d;
+  margin-top: -0.3em;
+  margin-bottom: 0.5em;
+}
+
+.heatmap-escala {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 0.8em;
+  font-size: 0.8em;
+  color: #7f8c8d;
+}
+
+.heatmap-escala-barras {
+  display: flex;
+  gap: 2px;
+}
+
+.heatmap-escala-bloque {
+  width: 24px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+
+
+
+
+
+/* === CAMPOS CONDICIONALES === */
+.campos-tipo {
+  display: none;
+}
+
+.campos-tipo.visible {
+  display: block;
+}
+
+
+
+/* === DIAS DE LA SEMANA (checkboxes) === */
+.grupo-dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8em;
+}
+
+.grupo-dias label {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+
+
+
+
+
+/* === HORARIOS POR DIA === */
+.horario-dia {
+  background-color: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 0.8em 1em;
+  margin-top: 0.8em;
+}
+
+.horario-dia-titulo {
+  margin: 0 0 0.5em 0;
+  font-size: 0.95em;
+  color: var(--color-secundario);
+}
+
+.horario-dia-campos {
+  display: flex;
+  gap: 1.5em;
+  flex-wrap: wrap;
+}
+
+.horario-dia-campos .campo {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* === FOOTER === */
+footer {
+  text-align: center;
+  padding: 1.5em;
+  margin-top: 2em;
+  color: #7f8c8d;
+  font-size: 0.85em;
+}

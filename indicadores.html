@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actividades DCC - Indicadores</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+
+
+
+<body>
+  <nav>
+    <a class="titulo-nav" href="index.html">Actividades DCC</a>
+    <a href="actividades.html">Informar Actividad</a>
+    <a href="listado.html">Listado Miembros</a>
+    <a href="indicadores.html">Indicadores</a>
+  </nav>
+
+  
+  <main>
+    <h1>Indicadores y Métricas</h1>
+
+    <!-- Tarjetas resumen -->
+    <div class="tarjetas-resumen" id="tarjetas-resumen"></div>
+
+    <!-- Gráfico torta: Distribución de miembros por tipo -->
+    <div class="indicador-seccion"> <!-- DEAJEMOS DIV en VEZ de SECTION por que las SECTION DEBERIAN TENER UN <h> -->
+      <h2>Distribución de miembros por tipo</h2>
+      <div class="grafico-torta-contenedor">
+        <div class="torta" id="torta-miembros"></div>
+        <div class="torta-leyenda" id="leyenda-miembros"></div>
+      </div>
+    </div>
+
+    <!-- Gráfico barras: Actividades por categoría (ranking) -->
+    <div class="indicador-seccion">
+      <h2>Ranking de actividades por categoría</h2>
+      <div class="grafico-barras-h" id="grafico-ranking"></div>
+    </div>
+
+    <!-- Mapa de calor: Distribución de actividades por día y hora -->
+    <div class="indicador-seccion">
+      <h2>Distribución de actividades por día y hora</h2>
+      <p class="indicador-descripcion">Intensidad de actividades según día de la semana y franja horaria.</p>
+      <div class="heatmap-contenedor" id="heatmap"></div>
+      <div class="heatmap-escala">
+        <span>Menos actividad</span>
+        <div class="heatmap-escala-barras" id="heatmap-escala"></div>
+        <span>Más actividad</span>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>CC5002 - Desarrollo Web - Universidad de Chile</p>
+  </footer>
+
+  <script src="js/indicadores.js"></script>
+</body>
+</html>

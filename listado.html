@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Actividades DCC - Listado de Miembros</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <nav>
+    <a class="titulo-nav" href="index.html">Actividades DCC</a>
+    <a href="actividades.html">Informar Actividad</a>
+    <a href="listado.html">Listado Miembros</a>
+    <a href="indicadores.html">Indicadores</a>
+  </nav>
+
+  <main>
+    <h1>Listado de Miembros</h1>
+
+    <!-- Controles de filtro -->
+    <section>
+    <h2>Filtros</h2>
+    <div class="controles">
+      <label for="filtro-tipo">Filtrar por tipo:</label>
+      <select id="filtro-tipo">
+        <option value="todos">Todos</option>
+        <option value="pregrado">Estudiante Pregrado</option>
+        <option value="postgrado">Estudiante Postgrado</option>
+        <option value="funcionario">Funcionario/a</option>
+        <option value="academico">Académico/a</option>
+      </select>
+
+      <label for="items-pagina">Mostrar:</label>
+      <select id="items-pagina">
+        <option value="5">5 por página</option>
+        <option value="10">10 por página</option>
+      </select>
+    </div>
+    </section>
+
+    <!-- Tabla de miembros -->
+    <table id="tabla-miembros">
+      <thead>
+        <tr>
+          <th id="col-nombre" title="Ordenar por nombre">Nombre</th>
+          <th id="col-apellido" title="Ordenar por apellido">Apellido</th>
+          <th id="col-email" title="Ordenar por email">Email</th>
+          <th id="col-telefono">Teléfono</th>
+          <th id="col-tipo" title="Ordenar por tipo">Tipo</th>
+        </tr>
+      </thead>
+      <tbody id="cuerpo-tabla">
+        <!-- Las filas se generan con JavaScript -->
+      </tbody>
+    </table>
+
+    <p id="msg-sin-datos">No hay miembros registrados para mostrar.</p>
+
+    <!-- Paginación -->
+    <div class="paginacion" id="paginacion"></div>
+  </main>
+
+  <footer>
+    <p>CC5002 - Desarrollo Web - Universidad de Chile</p>
+  </footer>
+
+  <script src="js/listado.js"></script>
+</body>
+</html>

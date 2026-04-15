@@ -58,6 +58,3 @@ Los 5 archivos HTML pasan el validador oficial de HTML5 del W3C sin errores ni a
 
 Basta con abrir `registro.html` en cualquier navegador moderno. Probado en Chrome y Firefox, y en distintas resoluciones de pantalla gracias a la configuración de `viewport` en cada página.
 
-## Nota sobre el nombre de la rama
-
-El enunciado pide que la rama se llame "Tarea 1" (con espacio), pero Git no permite espacios en nombres de ramas. Por eso la rama se llama `Tarea-1` (con guion), que es la convención equivalente más aceptada.

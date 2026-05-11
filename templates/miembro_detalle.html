@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ miembro.nombre }} - Actividades DCC{% endblock %}
+
+{% block content %}
+  <h1>{{ miembro.nombre }}</h1>
+
+  <section class="detalle-seccion">
+    <h2>Datos del Miembro</h2>
+    <ul class="detalle-lista">
+      <li><strong>Email:</strong> {{ miembro.email }}</li>
+      <li><strong>Teléfono:</strong> {{ miembro.telefono }}</li>
+      <li><strong>Tipo:</strong> {{ miembro.tipo }}</li>
+      <li><strong>Comuna:</strong> {{ miembro.comuna.nombre }} ({{ miembro.comuna.region.nombre }})</li>
+      <li><strong>Fecha de registro:</strong> {{ miembro.fecha_registro.strftime('%d-%m-%Y %H:%M') }}</li>
+    </ul>
+
+    {% if miembro.tipo == 'pregrado' and miembro.anio_ingreso %}
+      <ul class="detalle-lista">
+        <li><strong>Año de ingreso:</strong> {{ miembro.anio_ingreso }}</li>
+      </ul>
+    {% elif miembro.tipo == 'postgrado' %}
+      <ul class="detalle-lista">
+        {% if miembro.programa %}<li><strong>Programa:</strong> {{ miembro.programa }}</li>{% endif %}
+        {% if miembro.area_investigacion %}<li><strong>Área de investigación:</strong> {{ miembro.area_investigacion }}</li>{% endif %}
+      </ul>
+    {% elif miembro.tipo == 'funcionario' %}
+      <ul class="detalle-lista">
+        {% if miembro.cargo %}<li><strong>Cargo:</strong> {{ miembro.cargo }}</li>{% endif %}
+        {% if miembro.unidad %}<li><strong>Unidad:</strong> {{ miembro.unidad }}</li>{% endif %}
+      </ul>
+    {% elif miembro.tipo == 'academico' %}
+      <ul class="detalle-lista">
+        {% if miembro.departamento %}<li><strong>Departamento:</strong> {{ miembro.departamento }}</li>{% endif %}
+        {% if miembro.especialidad %}<li><strong>Especialidad:</strong> {{ miembro.especialidad }}</li>{% endif %}
+      </ul>
+    {% endif %}
+  </section>
+
+  <section class="detalle-seccion">
+    <h2>Actividades ({{ actividades_agrupadas | length }})</h2>
+
+    {% if actividades_agrupadas %}
+      {% for grupo in actividades_agrupadas %}
+        <article class="actividad-bloque">
+          <h3>{{ grupo.nombre }}</h3>
+          <ul class="detalle-lista">
+            <li><strong>Tipo:</strong> {{ grupo.tipo }}</li>
+            {% if grupo.descripcion %}
+              <li><strong>Descripción:</strong> {{ grupo.descripcion }}</li>
+            {% endif %}
+            <li><strong>Enlace:</strong> <a href="{{ grupo.enlace }}" target="_blank" rel="noopener noreferrer">{{ grupo.enlace }}</a></li>
+          </ul>
+
+          <h4 class="horarios-titulo">
+            Horarios{% if grupo.horarios | length > 1 %} ({{ grupo.horarios | length }}){% endif %}:
+          </h4>
+          <ul class="detalle-lista detalle-horarios">
+            {% for h in grupo.horarios %}
+              <li>
+                <strong>{{ h.dias | join(', ') }}</strong> —
+                inicio {{ h.hora_inicio }}, duración {{ h.duracion }}
+              </li>
+            {% endfor %}
+          </ul>
+
+          {% if grupo.fotos %}
+            <div class="actividad-fotos">
+              {% for foto in grupo.fotos %}
+                <a href="{{ url_for('static', filename=foto.ruta_archivo) }}" target="_blank" rel="noopener noreferrer">
+                  <img src="{{ url_for('static', filename=foto.ruta_archivo) }}"
+                       alt="{{ foto.nombre_archivo }}"
+                       class="actividad-foto-thumb">
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    {% else %}
+      <p>Este miembro no tiene actividades registradas.</p>
+    {% endif %}
+  </section>
+
+  <p class="volver">
+    <a href="{{ url_for('listado') }}">« Volver al listado</a>
+  </p>
+{% endblock %}

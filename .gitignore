@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Archivos subidos por usuarios (la carpeta queda, los archivos no)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Otros
+*.zip
+*.log

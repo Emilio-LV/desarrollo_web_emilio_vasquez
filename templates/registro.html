@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+
+{% block title %}Registrar Miembro - Actividades DCC{% endblock %}
+
+{% block content %}
+  {# Variables auxiliares para no romper si datos/errores vienen vacíos #}
+  {% set datos = datos or {} %}
+  {% set errores = errores or {} %}
+  {% set actividad_indices = actividad_indices or [0] %}
+
+  <h1>Registrar Miembro y Actividades</h1>
+
+  <form id="form-registro"
+        action="{{ url_for('registrar') }}"
+        method="post"
+        enctype="multipart/form-data">
+
+    <!-- ========== DATOS PERSONALES ========== -->
+    <fieldset>
+      <legend>Datos Personales</legend>
+
+      <div class="campo {% if errores.nombre %}campo-error{% endif %}" id="campo-nombre">
+        <label for="nombre">Nombre <span class="obligatorio">*</span></label>
+        <input type="text" id="nombre" name="nombre" value="{{ datos.nombre or '' }}">
+        <span class="msg-error">{{ errores.nombre or 'Ingrese un nombre válido (solo letras, entre 2 y 100 caracteres).' }}</span>
+      </div>
+
+      <div class="campo {% if errores.apellido %}campo-error{% endif %}" id="campo-apellido">
+        <label for="apellido">Apellido <span class="obligatorio">*</span></label>
+        <input type="text" id="apellido" name="apellido" value="{{ datos.apellido or '' }}">
+        <span class="msg-error">{{ errores.apellido or 'Ingrese un apellido válido (solo letras, entre 2 y 100 caracteres).' }}</span>
+      </div>
+
+      <div class="campo {% if errores.email %}campo-error{% endif %}" id="campo-email">
+        <label for="email">Correo electrónico <span class="obligatorio">*</span></label>
+        <input type="email" id="email" name="email" value="{{ datos.email or '' }}">
+        <span class="msg-error">{{ errores.email or 'Ingrese un correo válido (ej: usuario@dominio.com).' }}</span>
+      </div>
+
+      <div class="campo {% if errores.telefono %}campo-error{% endif %}" id="campo-telefono">
+        <label for="telefono">Teléfono <span class="obligatorio">*</span></label>
+        <input type="tel" id="telefono" name="telefono" placeholder="+56912345678" value="{{ datos.telefono or '' }}">
+        <span class="msg-error">{{ errores.telefono or 'Ingrese un teléfono válido (formato +569XXXXXXXX, 12 dígitos).' }}</span>
+      </div>
+    </fieldset>
+
+    <!-- ========== TIPO DE MIEMBRO ========== -->
+    <fieldset>
+      <legend>Tipo de Miembro</legend>
+
+      <div class="campo {% if errores.tipo %}campo-error{% endif %}" id="campo-tipo">
+        <label for="tipo">Seleccione su tipo <span class="obligatorio">*</span></label>
+        <select id="tipo" name="tipo">
+          <option value="">-- Seleccione --</option>
+          <option value="pregrado" {% if datos.tipo == 'pregrado' %}selected{% endif %}>Estudiante de Pregrado</option>
+          <option value="postgrado" {% if datos.tipo == 'postgrado' %}selected{% endif %}>Estudiante de Postgrado</option>
+          <option value="funcionario" {% if datos.tipo == 'funcionario' %}selected{% endif %}>Funcionario/a</option>
+          <option value="academico" {% if datos.tipo == 'academico' %}selected{% endif %}>Académico/a</option>
+        </select>
+        <span class="msg-error">{{ errores.tipo or 'Seleccione un tipo de miembro.' }}</span>
+      </div>
+
+      <div id="campos-pregrado" class="campos-tipo {% if datos.tipo == 'pregrado' %}visible{% endif %}">
+        <div class="campo {% if errores.anio_ingreso %}campo-error{% endif %}" id="campo-anio-ingreso">
+          <label for="anio-ingreso">Año de ingreso <span class="obligatorio">*</span></label>
+          <input type="number" id="anio-ingreso" name="anio_ingreso" placeholder="2024" value="{{ datos.anio_ingreso or '' }}">
+          <span class="msg-error">{{ errores.anio_ingreso or 'Ingrese un año válido (ej: 2020).' }}</span>
+        </div>
+      </div>
+
+      <div id="campos-postgrado" class="campos-tipo {% if datos.tipo == 'postgrado' %}visible{% endif %}">
+        <div class="campo {% if errores.programa %}campo-error{% endif %}" id="campo-programa">
+          <label for="programa">Programa <span class="obligatorio">*</span></label>
+          <select id="programa" name="programa">
+            <option value="">-- Seleccione --</option>
+            <option value="magister" {% if datos.programa == 'magister' %}selected{% endif %}>Magíster</option>
+            <option value="doctorado" {% if datos.programa == 'doctorado' %}selected{% endif %}>Doctorado</option>
+          </select>
+          <span class="msg-error">{{ errores.programa or 'Seleccione un programa.' }}</span>
+        </div>
+        <div class="campo {% if errores.area_investigacion %}campo-error{% endif %}" id="campo-area-investigacion">
+          <label for="area-investigacion">Área de investigación <small>(opcional, máx. 200 caracteres)</small></label>
+          <input type="text" id="area-investigacion" name="area_investigacion" maxlength="200" value="{{ datos.area_investigacion or '' }}">
+          <span class="msg-error">{{ errores.area_investigacion or 'El área de investigación no debe superar los 200 caracteres.' }}</span>
+        </div>
+      </div>
+
+      <div id="campos-funcionario" class="campos-tipo {% if datos.tipo == 'funcionario' %}visible{% endif %}">
+        <div class="campo {% if errores.cargo %}campo-error{% endif %}" id="campo-cargo">
+          <label for="cargo">Cargo <span class="obligatorio">*</span></label>
+          <input type="text" id="cargo" name="cargo" value="{{ datos.cargo or '' }}">
+          <span class="msg-error">{{ errores.cargo or 'Ingrese su cargo (solo letras, entre 2 y 200 caracteres).' }}</span>
+        </div>
+        <div class="campo {% if errores.unidad %}campo-error{% endif %}" id="campo-unidad">
+          <label for="unidad">Unidad o Área <small>(opcional, máx. 200 caracteres)</small></label>
+          <input type="text" id="unidad" name="unidad" maxlength="200" value="{{ datos.unidad or '' }}">
+          <span class="msg-error">{{ errores.unidad or 'La unidad o área no debe superar los 200 caracteres.' }}</span>
+        </div>
+      </div>
+
+      <div id="campos-academico" class="campos-tipo {% if datos.tipo == 'academico' %}visible{% endif %}">
+        <div class="campo {% if errores.departamento %}campo-error{% endif %}" id="campo-departamento">
+          <label for="departamento">Departamento <span class="obligatorio">*</span></label>
+          <input type="text" id="departamento" name="departamento" value="{{ datos.departamento or '' }}">
+          <span class="msg-error">{{ errores.departamento or 'Ingrese su departamento (solo letras, entre 2 y 200 caracteres).' }}</span>
+        </div>
+        <div class="campo {% if errores.especialidad %}campo-error{% endif %}" id="campo-especialidad">
+          <label for="especialidad">Área de especialización <small>(opcional, máx. 200 caracteres)</small></label>
+          <input type="text" id="especialidad" name="especialidad" maxlength="200" value="{{ datos.especialidad or '' }}">
+          <span class="msg-error">{{ errores.especialidad or 'El área de especialización no debe superar los 200 caracteres.' }}</span>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ========== UBICACIÓN ========== -->
+    <fieldset>
+      <legend>Ubicación</legend>
+
+      <div class="campo {% if errores.region_id %}campo-error{% endif %}" id="campo-region">
+        <label for="region">Región <span class="obligatorio">*</span></label>
+        <select id="region" name="region_id">
+          <option value="">-- Seleccione --</option>
+          {% for r in regiones %}
+            <option value="{{ r.id }}" {% if datos.region_id|string == r.id|string %}selected{% endif %}>{{ r.nombre }}</option>
+          {% endfor %}
+        </select>
+        <span class="msg-error">{{ errores.region_id or 'Seleccione una región.' }}</span>
+      </div>
+
+      <div class="campo {% if errores.comuna_id %}campo-error{% endif %}" id="campo-comuna">
+        <label for="comuna">Comuna <span class="obligatorio">*</span></label>
+        <select id="comuna" name="comuna_id" data-selected="{{ datos.comuna_id or '' }}">
+          <option value="">-- Seleccione una región primero --</option>
+        </select>
+        <span class="msg-error">{{ errores.comuna_id or 'Seleccione una comuna.' }}</span>
+      </div>
+    </fieldset>
+
+    <!-- ========== ACTIVIDADES (loop repetible) ========== -->
+    <div id="actividades-contenedor">
+      {% for i in actividad_indices %}
+        {% set dias_i = datos.get('dias_' ~ i, []) %}
+        <article class="actividad-bloque-form" data-index="{{ i }}">
+
+          <header class="actividad-bloque-header">
+            <h2 class="actividad-bloque-titulo">
+              Actividad <span class="actividad-numero">{{ loop.index }}</span>
+            </h2>
+            {% if not loop.first %}
+              <button type="button" class="btn-quitar-actividad" title="Quitar esta actividad">× Quitar</button>
+            {% endif %}
+          </header>
+
+          <!-- Datos de la Actividad -->
+          <fieldset>
+            <legend>Datos de la Actividad</legend>
+
+            <div class="campo {% if errores.get('nombre_actividad_' ~ i) %}campo-error{% endif %}" id="campo-nombre-act-{{ i }}">
+              <label for="nombre-act-{{ i }}">Nombre de la actividad <span class="obligatorio">*</span></label>
+              <input type="text" id="nombre-act-{{ i }}" name="nombre_actividad_{{ i }}" maxlength="45" value="{{ datos.get('nombre_actividad_' ~ i, '') }}">
+              <span class="msg-error">{{ errores.get('nombre_actividad_' ~ i) or 'Ingrese el nombre de la actividad (entre 3 y 45 caracteres).' }}</span>
+            </div>
+
+            <div class="campo {% if errores.get('tipo_actividad_' ~ i) %}campo-error{% endif %}" id="campo-tipo-act-{{ i }}">
+              <label for="tipo-act-{{ i }}">Tipo de actividad <span class="obligatorio">*</span></label>
+              {% set t_act = datos.get('tipo_actividad_' ~ i, '') %}
+              <select id="tipo-act-{{ i }}" name="tipo_actividad_{{ i }}">
+                <option value="">-- Seleccione --</option>
+                <option value="arte"        {% if t_act == 'arte' %}selected{% endif %}>Arte</option>
+                <option value="deporte"     {% if t_act == 'deporte' %}selected{% endif %}>Deporte</option>
+                <option value="tecnología"  {% if t_act == 'tecnología' %}selected{% endif %}>Tecnología</option>
+                <option value="social"      {% if t_act == 'social' %}selected{% endif %}>Social</option>
+                <option value="recreación"  {% if t_act == 'recreación' %}selected{% endif %}>Recreación</option>
+                <option value="otra"        {% if t_act == 'otra' %}selected{% endif %}>Otra</option>
+              </select>
+              <span class="msg-error">{{ errores.get('tipo_actividad_' ~ i) or 'Seleccione un tipo de actividad.' }}</span>
+            </div>
+
+            <div class="campo {% if errores.get('descripcion_' ~ i) %}campo-error{% endif %}" id="campo-descripcion-{{ i }}">
+              <label for="descripcion-{{ i }}">Descripción <small>(opcional, máx. 500 caracteres)</small></label>
+              <textarea id="descripcion-{{ i }}" name="descripcion_{{ i }}" rows="3" maxlength="500">{{ datos.get('descripcion_' ~ i, '') }}</textarea>
+              <span class="msg-error">{{ errores.get('descripcion_' ~ i) or 'La descripción no debe superar los 500 caracteres.' }}</span>
+            </div>
+          </fieldset>
+
+          <!-- Horarios -->
+          <fieldset>
+            <legend>Horarios</legend>
+
+            <div class="campo {% if errores.get('dias_' ~ i) %}campo-error{% endif %}" id="campo-dias-{{ i }}">
+              <label>Días de la semana <span class="obligatorio">*</span></label>
+              <div class="grupo-dias">
+                <label><input type="checkbox" name="dias_{{ i }}" value="lunes"     data-nombre="Lunes"     {% if 'lunes'     in dias_i %}checked{% endif %}> Lunes</label>
+                <label><input type="checkbox" name="dias_{{ i }}" value="martes"    data-nombre="Martes"    {% if 'martes'    in dias_i %}checked{% endif %}> Martes</label>
+                <label><input type="checkbox" name="dias_{{ i }}" value="miércoles" data-nombre="Miércoles" {% if 'miércoles' in dias_i %}checked{% endif %}> Miércoles</label>
+                <label><input type="checkbox" name="dias_{{ i }}" value="jueves"    data-nombre="Jueves"    {% if 'jueves'    in dias_i %}checked{% endif %}> Jueves</label>
+                <label><input type="checkbox" name="dias_{{ i }}" value="viernes"   data-nombre="Viernes"   {% if 'viernes'   in dias_i %}checked{% endif %}> Viernes</label>
+                <label><input type="checkbox" name="dias_{{ i }}" value="sábado"    data-nombre="Sábado"    {% if 'sábado'    in dias_i %}checked{% endif %}> Sábado</label>
+                <label><input type="checkbox" name="dias_{{ i }}" value="domingo"   data-nombre="Domingo"   {% if 'domingo'   in dias_i %}checked{% endif %}> Domingo</label>
+              </div>
+              <span class="msg-error">{{ errores.get('dias_' ~ i) or 'Seleccione al menos un día.' }}</span>
+            </div>
+
+            <div id="horarios-por-dia-{{ i }}" class="horarios-por-dia"></div>
+          </fieldset>
+
+          <!-- Archivos y Enlace -->
+          <fieldset>
+            <legend>Archivos y Enlace</legend>
+
+            <div class="campo {% if errores.get('archivo_' ~ i) %}campo-error{% endif %}" id="campo-archivo-{{ i }}">
+              <label for="archivo-{{ i }}">
+                Fotos o videos de la actividad <span class="obligatorio">*</span>
+                <small>(puede seleccionar varios)</small>
+              </label>
+              <input type="file" id="archivo-{{ i }}" name="archivo_{{ i }}" accept="image/*,video/*" multiple>
+              <span class="msg-error">{{ errores.get('archivo_' ~ i) or 'Debe adjuntar al menos un archivo de imagen o video.' }}</span>
+            </div>
+
+            <div class="campo {% if errores.get('enlace_' ~ i) %}campo-error{% endif %}" id="campo-enlace-{{ i }}">
+              <label for="enlace-{{ i }}">Enlace a contenido propio <span class="obligatorio">*</span></label>
+              <input type="url" id="enlace-{{ i }}" name="enlace_{{ i }}" placeholder="https://ejemplo.com/mi-actividad" value="{{ datos.get('enlace_' ~ i, '') }}">
+              <span class="msg-error">{{ errores.get('enlace_' ~ i) or 'Ingrese una URL válida (debe comenzar con http:// o https://).' }}</span>
+            </div>
+          </fieldset>
+        </article>
+      {% endfor %}
+    </div>
+
+    <button type="button" id="btn-agregar-actividad" class="boton boton-agregar">+ Agregar otra actividad</button>
+
+    <button type="submit" id="btn-registrar">Registrar</button>
+
+  </form>
+{% endblock %}
+
+{% block javascript %}
+  <script>
+    window.DATOS_REGIONES = {{ regiones | tojson }};
+    window.MAX_ACTIVIDADES = 10;
+  </script>
+  <script src="{{ url_for('static', filename='js/regiones.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/validacion-registro.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Actividades DCC{% endblock %}
+
+{% block content %}
+  <h1>Sistema de Actividades - Comunidad DCC</h1>
+
+  <section>
+    <h2>Bienvenido</h2>
+    <p>
+      Bienvenido al sistema de gestión de actividades del Departamento de
+      Ciencias de la Computación. Desde aquí puedes acceder a las distintas
+      funcionalidades del sistema.
+    </p>
+    <p>Desde aquí puedes:</p>
+    <ul>
+      <li><a href="{{ url_for('registrar') }}">Registrar un miembro</a> y sus actividades.</li>
+      <li><a href="{{ url_for('listado') }}">Consultar el listado</a> de miembros registrados.</li>
+      <li><a href="#">Ver estadísticas</a> de la comunidad.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Últimos miembros agregados</h2>
+    {% if miembros %}
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Comuna</th>
+            <th>Fecha de registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in miembros %}
+            <tr class="miembro-fila" data-href="{{ url_for('miembro', id=m.id) }}">
+              <td>{{ m.nombre }}</td>
+              <td>{{ m.email }}</td>
+              <td>{{ m.telefono }}</td>
+              <td>{{ m.comuna.nombre }}</td>
+              <td>{{ m.fecha_registro.strftime('%d-%m-%Y') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Aún no hay miembros registrados.</p>
+    {% endif %}
+  </section>
+{% endblock %}
+
+{% block javascript %}
+  <script>
+    // Cada fila va al detalle del miembro al hacer clic.
+    document.querySelectorAll('.miembro-fila').forEach((fila) => {
+      fila.addEventListener('click', () => {
+        window.location.href = fila.dataset.href;
+      });
+    });
+  </script>
+{% endblock %}

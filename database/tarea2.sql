@@ -112,6 +112,28 @@ CREATE TABLE IF NOT EXISTS `tarea2`.`foto` (
 ENGINE = InnoDB;
 
 
+-- -----------------------------------------------------
+-- Table `tarea2`.`comentario`
+-- Agregada en Tarea 3 a partir del script tabla-comentario.sql
+-- adjunto al enunciado. Cada comentario se asocia a una fila
+-- de la tabla `actividad` (la FK del enunciado).
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tarea2`.`comentario` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(80) NOT NULL,
+  `texto` VARCHAR(300) NOT NULL,
+  `fecha` TIMESTAMP NOT NULL,
+  `actividad_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_comentario_actividad1_idx` (`actividad_id` ASC),
+  CONSTRAINT `fk_comentario_actividad1`
+    FOREIGN KEY (`actividad_id`)
+    REFERENCES `tarea2`.`actividad` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

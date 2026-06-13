@@ -151,6 +151,23 @@ def _validar_actividad(form, files, i, errores):
         errores[f"archivo_{i}"] = error_archivo
 
 
+def validar_comentario(nombre, texto):
+    """Valida nombre (3 a 80) y texto (5 a 300). Retorna un dict con los errores."""
+    errores = {}
+
+    nombre_clean = (nombre or "").strip()
+    if not (3 <= len(nombre_clean) <= 80):
+        errores["nombre"] = "El nombre debe tener entre 3 y 80 caracteres."
+
+    texto_clean = (texto or "").strip()
+    if len(texto_clean) < 5:
+        errores["texto"] = "El comentario debe tener al menos 5 caracteres."
+    elif len(texto_clean) > 300:
+        errores["texto"] = "El comentario no debe superar los 300 caracteres."
+
+    return errores
+
+
 def validar_registro(form, files, comunas_por_region):
     """Valida el form completo. Retorna (errores, indices_actividades).
     Si errores queda vacío, los datos pasan."""

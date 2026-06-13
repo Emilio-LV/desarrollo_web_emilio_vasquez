@@ -42,7 +42,10 @@
 
     {% if actividades_agrupadas %}
       {% for grupo in actividades_agrupadas %}
-        <article class="actividad-bloque">
+        {% set grupo_indice = loop.index0 %}
+        {% set ids_csv = grupo.actividad_ids | join(',') %}
+        {% set actividad_id_principal = grupo.actividad_ids[0] %}
+        <article class="actividad-bloque" data-actividad-ids="{{ ids_csv }}" data-actividad-id="{{ actividad_id_principal }}">
           <h3>{{ grupo.nombre }}</h3>
           <ul class="detalle-lista">
             <li><strong>Tipo:</strong> {{ grupo.tipo }}</li>
@@ -75,6 +78,50 @@
               {% endfor %}
             </div>
           {% endif %}
+
+          <!-- Bloque de comentarios -->
+          <section class="comentarios-bloque">
+            <h4 class="comentarios-titulo">Comentarios</h4>
+            <ul class="comentarios-lista" id="comentarios-lista-{{ grupo_indice }}" aria-live="polite">
+              <!-- llenado dinámicamente por comentarios.js -->
+            </ul>
+            <p class="comentarios-vacio" id="comentarios-vacio-{{ grupo_indice }}" hidden>
+              Sé el primero en comentar esta actividad.
+            </p>
+
+            <form class="comentario-form" id="comentario-form-{{ grupo_indice }}" novalidate>
+              <input type="hidden" name="actividad_id" value="{{ actividad_id_principal }}">
+
+              <div class="campo">
+                <label for="nombre-{{ grupo_indice }}">Nombre del comentarista</label>
+                <input
+                  type="text"
+                  id="nombre-{{ grupo_indice }}"
+                  name="nombre"
+                  minlength="3"
+                  maxlength="80"
+                  required
+                  autocomplete="off">
+                <span class="error-campo" id="error-nombre-{{ grupo_indice }}" hidden></span>
+              </div>
+
+              <div class="campo">
+                <label for="texto-{{ grupo_indice }}">Comentario</label>
+                <textarea
+                  id="texto-{{ grupo_indice }}"
+                  name="texto"
+                  rows="4"
+                  cols="50"
+                  minlength="5"
+                  maxlength="300"
+                  required></textarea>
+                <span class="error-campo" id="error-texto-{{ grupo_indice }}" hidden></span>
+              </div>
+
+              <button type="submit">Agregar comentario</button>
+              <p class="mensaje-exito" id="exito-{{ grupo_indice }}" hidden></p>
+            </form>
+          </section>
         </article>
       {% endfor %}
     {% else %}
@@ -85,4 +132,8 @@
   <p class="volver">
     <a href="{{ url_for('listado') }}">« Volver al listado</a>
   </p>
+{% endblock %}
+
+{% block javascript %}
+  <script src="{{ url_for('static', filename='js/comentarios.js') }}"></script>
 {% endblock %}

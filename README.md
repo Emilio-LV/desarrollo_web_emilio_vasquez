@@ -1,79 +1,84 @@
-# Tarea 2 — CC5002 Desarrollo Web
+# Tarea 3 — CC5002 Desarrollo de Aplicaciones Web
 
-Aplicación web para registrar miembros y actividades de la comunidad del DCC, construida con **Flask + MySQL + SQLAlchemy**. Es la continuación de la Tarea 1: el mismo formulario que se hizo en HTML/JS plano ahora vive sobre un backend real, con validación servidor, persistencia en base de datos y manejo de archivos.
+Continuación de la Tarea 2 (Flask + MySQL + SQLAlchemy). En esta entrega se agregan
+la página de estadísticas con 3 gráficos y los comentarios en las actividades.
 
-## Qué hace
+## Gráficos
 
-- **Portada** con un mensaje de bienvenida, menú y un listado con los últimos 5 miembros agregados.
-- **Registrar miembro y actividades**: formulario que permite ingresar los datos personales (nombre, apellido, email, teléfono), el tipo de miembro (pregrado, postgrado, funcionario o académico) con sus campos condicionales, la ubicación (región y comuna), y una o varias actividades — cada actividad con sus días, horarios por día, descripción, enlace y archivos (fotos o videos). Tiene validación en el navegador (JavaScript) y validación en el servidor (Python).
-- **Listado de miembros** paginado, donde cada fila lleva al detalle del miembro al hacer clic.
-- **Detalle del miembro** con todos sus datos personales, ubicación y la lista de sus actividades con sus horarios y fotos.
+Los gráficos se generan en el lado del cliente, como pide el enunciado. El servidor
+solo entrega los datos: hay 3 URLs (`/api/stats/...`) que responden JSON con el
+formato `{status: "ok", data: [...]}`. Al cargar la página de estadísticas,
+`static/js/estadisticas.js` hace un `fetch` a cada URL y dibuja con la biblioteca
+**Highcharts** (https://www.highcharts.com), que se carga desde su CDN oficial,
+por lo que se necesita conexión a internet para ver los gráficos. Es una de las
+bibliotecas sugeridas en el enunciado.
 
-## Estructura
+Detalle del gráfico de líneas: los días sin registros entre el primero y el último
+se rellenan con 0, para que el eje X no salte fechas.
 
+## Comentarios
+
+En el detalle de un miembro, cada actividad muestra sus comentarios y un formulario
+para agregar uno nuevo. Las dos cosas se hacen con `fetch` (llamadas asíncronas),
+sin recargar la página:
+
+- Al cargar la página, `static/js/comentarios.js` pide los comentarios de cada
+  actividad a `GET /api/comentarios`.
+- Al enviar el formulario, se valida primero en JavaScript; si pasa, se hace
+  `POST /api/comentarios`. El servidor vuelve a validar e inserta en la tabla
+  `comentario`. Si hay errores, responde 400 y los mensajes se muestran junto a
+  cada campo, manteniendo el formulario visible con lo que el usuario escribió.
+
+**Decisión importante**: en mi modelo de datos, una actividad que se muestra como
+un solo bloque puede estar guardada en varias filas de la tabla `actividad`
+(una por cada horario distinto, ver sección siguiente). Como la FK del script del
+enunciado apunta a una fila de `actividad`, decidí que los comentarios se **leen**
+de todas las filas del bloque (`?actividad_ids=1,2`) pero se **insertan** asociados
+a la primera fila del grupo. Así se respeta el script sin perder comentarios.
+
+## Base de datos: todos los cambios
+
+1. **Tabla `comentario` (nueva en esta tarea)**: es el script `tabla-comentario.sql`
+   adjunto al enunciado, sin modificaciones, integrado al final de
+   `database/tarea2.sql`. Columnas: `id`, `nombre` (80), `texto` (300), `fecha`
+   (TIMESTAMP) y `actividad_id` con FK a `actividad.id`. En `database/db.py` se
+   agregó el modelo `Comentario` y la relación con `Actividad`.
+
+2. **Cambios que vienen de mi Tarea 2 y se mantienen** (el enunciado de la T2
+   permitía ajustar el modelo propuesto):
+   - La tabla `miembro` tiene una columna `tipo` (pregrado, postgrado, funcionario,
+     academico) y columnas opcionales que dependen del tipo (año de ingreso,
+     programa, cargo, departamento, etc.).
+   - En la tabla `actividad`, la columna `dia` es un `SET` en vez de un `ENUM`:
+     una misma fila puede guardar varios días si comparten horario. Por eso una
+     actividad con horarios distintos genera más de una fila.
+
+3. **Fecha de los comentarios**: se inserta desde Python con `datetime.now()`
+   en vez de dejar que MySQL la complete, para poder devolverla al cliente en la
+   misma respuesta del POST.
+
+Para crear todo desde cero: ejecutar en orden `database/create_user.sql`,
+`database/tarea2.sql` (ya incluye `comentario`) y `database/region-comuna.sql`.
+
+## Validaciones y seguridad
+
+- Doble validación: JavaScript en el cliente (aviso rápido al usuario, se puede
+  saltar) y `utils/validations.py` en el servidor (la que protege de verdad).
+  Las reglas del comentario son las del enunciado: nombre de 3 a 80 caracteres,
+  texto de mínimo 5 (y máximo 300 por el largo de la columna).
+- El servidor también verifica que la actividad del comentario exista.
+- Los comentarios se pintan en el navegador con `textContent` (nunca `innerHTML`),
+  así un comentario con HTML o scripts se muestra como texto y no se ejecuta.
+- Las consultas usan SQLAlchemy con parámetros, lo que evita inyección SQL.
+
+## Cómo correr el proyecto
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
 ```
-Codigo/
-├── app.py                # Punto de entrada de Flask: rutas y orquestación.
-├── database/             # Scripts SQL y modelos SQLAlchemy.
-├── utils/                # Validaciones del lado del servidor.
-├── templates/            # Vistas en Jinja.
-├── static/               # CSS, JS y archivos subidos por los miembros.
-├── requirements.txt      # Dependencias Python.
-└── README.md
-```
 
-A grandes rasgos: `app.py` recibe las peticiones HTTP, delega la validación a `utils/validations.py`, persiste y consulta vía `database/db.py`, y renderiza con los templates de `templates/`. Los scripts `database/create_user.sql`, `database/tarea2.sql` y `database/region-comuna.sql` se corren al inicio para preparar la base.
-
-## Setup
-
-1. Conectado como `root` en MySQL, ejecutar en orden:
-   - `database/create_user.sql` — crea el usuario `cc5002` y le da permisos.
-   - `database/tarea2.sql` — crea la base `tarea2` y sus 5 tablas.
-   - `database/region-comuna.sql` — carga las 16 regiones y 345 comunas.
-
-2. Crear el entorno virtual e instalar dependencias:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
-
-3. Levantar la app:
-   ```bash
-   python app.py
-   ```
-   Servidor en `http://127.0.0.1:5000/`.
-
-## Decisiones que tomé
-
-### Modelo de datos
-
-Usé el `tarea2.sql` provisto, pero le hice tres modificaciones para acomodar el formulario de Tarea 1:
-
-1. A la tabla `miembro` le agregué la columna `tipo` (con sus 4 valores: pregrado, postgrado, funcionario, académico) y los 7 campos condicionales según el tipo (año de ingreso, programa, área de investigación, cargo, unidad, departamento, especialidad). Todos los condicionales son nullable: cuando un miembro es de pregrado solo se rellena `anio_ingreso` y el resto queda en NULL. 
-
-2. Cambié la columna `dia` de `actividad` de `ENUM` a `SET`. Con `ENUM` una actividad multi-día requería múltiples filas, y eso obligaba a duplicar fotos en la tabla `foto`. Con `SET` puedo tener "lunes,miércoles" en una sola celda.
-
-3. Agregué la columna `enlace VARCHAR(500) NOT NULL` a `actividad` porque el form de Tarea 1 ya tenía un campo obligatorio de URL.
-
-### Formulario con múltiples actividades
-
-El formulario permite registrar **varias actividades en un mismo submit** (hasta 10). El usuario llena los datos personales una sola vez y después puede agregar tantos bloques de actividad como quiera con el botón "+ Agregar otra actividad". Esto evita el caso donde un miembro queda duplicado en la BD solo por inscribir 2 actividades y así puede hacer todo de una.
-
-Cuando una actividad multi-día tiene **horarios distintos por día** (ej. futbol los viernes 16:00 y los sábados 08:00), internamente se inserta como varias filas en `actividad` — pero en el detalle del miembro las agrupo visualmente por nombre, así no se ve "futbol" repetido dos veces. Cada fila es semánticamente correcta (un horario único), y la presentación queda limpia.
-
-### El "apellido" no existe en la BD
-
-El form tiene `nombre` y `apellido` como campos separados (igual que Tarea 1), pero al guardar los concateno en la columna `nombre`. Pude haber agregado una columna `apellido`, pero el enunciado no lo pedía y mantener una sola columna es más simple.
-
-### Sin login
-
-La app **no tiene autenticación**. Cualquier visitante puede entrar, registrar miembros, ver el listado. El usuario `cc5002` de MySQL no es un "usuario del sitio" sino la credencial técnica con la que Flask se conecta a la base.
-
-### Validación en tres capas
-
-La validación cliente (JS) es solo para UX — feedback rápido al usuario. No es seguridad: se puede burlar apagando JavaScript, editando el HTML. Por eso la validación servidor (en `utils/validations.py`) repite todo el chequeo, y la BD tiene constraints (NOT NULL, FK, ENUM/SET) como red final.
-
-### Archivos
-
-Las fotos/videos van a `static/uploads/`. Cada uno se guarda con un nombre único generado de hash + uuid + extensión real detectada leyendo los primeros bytes con `filetype.guess()` (no confío en la extensión que diga el browser). Eso protege contra alguien que rename un `.exe` a `.jpg`.
+La aplicación queda en `http://127.0.0.1:5000/`. Requiere MySQL corriendo en
+localhost:3306 con la base `tarea2` (credenciales del enunciado: usuario `cc5002`).

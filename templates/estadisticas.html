@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Estadísticas - Actividades DCC{% endblock %}
+
+{% block content %}
+  <h1>Estadísticas de la comunidad</h1>
+
+  <section class="stats-seccion">
+    <h2>Miembros registrados por día</h2>
+    <p class="stats-descripcion">Cantidad de miembros que se registraron en cada día.</p>
+    <div id="grafico-miembros-por-dia" class="grafico-contenedor"></div>
+    <p class="stats-error" id="error-miembros-por-dia" hidden></p>
+  </section>
+
+  <section class="stats-seccion">
+    <h2>Actividades por tipo</h2>
+    <p class="stats-descripcion">Distribución del total de actividades extraprogramáticas según tipo.</p>
+    <div id="grafico-actividades-por-tipo" class="grafico-contenedor"></div>
+    <p class="stats-error" id="error-actividades-por-tipo" hidden></p>
+  </section>
+
+  <section class="stats-seccion">
+    <h2>Actividades por comuna</h2>
+    <p class="stats-descripcion">
+      Total de actividades correspondientes a miembros de cada comuna registrada.
+    </p>
+    <div id="grafico-actividades-por-comuna" class="grafico-contenedor"></div>
+    <p class="stats-error" id="error-actividades-por-comuna" hidden></p>
+  </section>
+
+  <p class="volver">
+    <a href="{{ url_for('index') }}">« Volver a la portada</a>
+  </p>
+{% endblock %}
+
+{% block javascript %}
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="{{ url_for('static', filename='js/estadisticas.js') }}"></script>
+{% endblock %}

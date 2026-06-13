@@ -711,3 +711,139 @@ tr.miembro-fila:hover {
 .detalle-horarios li {
   padding: 0.15em 0;
 }
+
+/* === ESTADISTICAS (Tarea 3) === */
+.stats-seccion {
+  background-color: white;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  padding: 1.2em;
+  margin-bottom: 1.5em;
+}
+
+.stats-descripcion {
+  color: #555;
+  margin: 0 0 0.8em;
+}
+
+.grafico-contenedor {
+  width: 100%;
+  height: 380px;
+  min-height: 300px;
+}
+
+.stats-error {
+  color: var(--color-error);
+  font-weight: bold;
+  margin-top: 0.5em;
+}
+
+.volver {
+  margin: 2em 0 1em;
+}
+
+/* === COMENTARIOS (Tarea 3) === */
+.comentarios-bloque {
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: 1px dashed var(--color-borde);
+}
+
+.comentarios-titulo {
+  margin: 0 0 0.6em;
+  font-size: 1em;
+  color: var(--color-secundario);
+}
+
+.comentarios-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1em;
+}
+
+.comentario {
+  background-color: #fafbfc;
+  border: 1px solid var(--color-borde);
+  border-radius: 5px;
+  padding: 0.6em 0.8em;
+  margin-bottom: 0.5em;
+}
+
+.comentario-meta {
+  font-size: 0.85em;
+  color: #666;
+  margin-bottom: 0.25em;
+}
+
+.comentario-autor {
+  font-weight: bold;
+  color: var(--color-primario);
+}
+
+.comentario-texto {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.comentarios-vacio {
+  color: #777;
+  font-style: italic;
+  margin: 0 0 1em;
+}
+
+.comentario-form {
+  background-color: #f3f6fa;
+  border: 1px solid var(--color-borde);
+  border-radius: 5px;
+  padding: 0.8em 1em;
+}
+
+.comentario-form .campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.6em;
+}
+
+.comentario-form label {
+  font-size: 0.9em;
+  margin-bottom: 0.25em;
+  color: var(--color-primario);
+}
+
+.comentario-form input[type="text"],
+.comentario-form textarea {
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  padding: 0.4em 0.6em;
+  font-family: inherit;
+}
+
+.comentario-form textarea {
+  resize: vertical;
+}
+
+.comentario-form button {
+  background-color: var(--color-secundario);
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comentario-form button:hover {
+  background-color: #2576a8;
+}
+
+.comentario-form .error-campo {
+  color: var(--color-error);
+  font-size: 0.85em;
+  margin-top: 0.2em;
+}
+
+.comentario-form .mensaje-exito {
+  color: var(--color-exito);
+  font-weight: bold;
+  margin-top: 0.5em;
+}

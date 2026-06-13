@@ -1,7 +1,7 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, abort
+from flask import Flask, request, render_template, redirect, url_for, flash, abort, jsonify
 from werkzeug.utils import secure_filename
 from database import db
-from utils.validations import validar_registro
+from utils.validations import validar_registro, validar_comentario
 import hashlib
 import filetype
 import os
@@ -103,6 +103,73 @@ def miembro(id):
     )
 
 
+@app.route("/estadisticas", methods=["GET"])
+def estadisticas():
+    return render_template("estadisticas.html")
+
+
+@app.route("/api/stats/miembros-por-dia", methods=["GET"])
+def api_miembros_por_dia():
+    return jsonify({"status": "ok", "data": db.get_miembros_por_dia()})
+
+
+@app.route("/api/stats/actividades-por-tipo", methods=["GET"])
+def api_actividades_por_tipo():
+    return jsonify({"status": "ok", "data": db.get_actividades_por_tipo()})
+
+
+@app.route("/api/stats/actividades-por-comuna", methods=["GET"])
+def api_actividades_por_comuna():
+    return jsonify({"status": "ok", "data": db.get_actividades_por_comuna()})
+
+
+@app.route("/api/comentarios", methods=["GET"])
+def api_listar_comentarios():
+    """Lista comentarios. Acepta ?actividad_id=N o ?actividad_ids=1,2,3."""
+    ids_param = (request.args.get("actividad_ids") or "").strip()
+    id_param = (request.args.get("actividad_id") or "").strip()
+
+    ids = []
+    try:
+        if ids_param:
+            ids = [int(x) for x in ids_param.split(",") if x.strip()]
+        elif id_param:
+            ids = [int(id_param)]
+    except ValueError:
+        return jsonify({"status": "error", "mensaje": "Parámetro inválido."}), 400
+
+    if not ids:
+        return jsonify({"status": "ok", "data": []})
+
+    data = db.get_comentarios_de_actividades(ids)
+    return jsonify({"status": "ok", "data": data})
+
+
+@app.route("/api/comentarios", methods=["POST"])
+def api_agregar_comentario():
+    """Valida y guarda un comentario. Devuelve el comentario creado o los errores (400)."""
+    nombre = (request.form.get("nombre") or "").strip()
+    texto = (request.form.get("texto") or "").strip()
+    actividad_id_raw = (request.form.get("actividad_id") or "").strip()
+
+    errores = validar_comentario(nombre, texto)
+    try:
+        actividad_id = int(actividad_id_raw)
+    except ValueError:
+        errores["actividad_id"] = "Actividad inválida."
+        actividad_id = None
+
+    if actividad_id is not None and "actividad_id" not in errores:
+        if not db.actividad_existe(actividad_id):
+            errores["actividad_id"] = "La actividad no existe."
+
+    if errores:
+        return jsonify({"status": "error", "errores": errores}), 400
+
+    nuevo = db.crear_comentario(actividad_id, nombre, texto)
+    return jsonify({"status": "ok", "data": nuevo})
+
+
 # --- Helpers ---
 
 def _construir_datos_miembro(form):
@@ -196,8 +263,8 @@ def _calcular_duracion(hora_inicio, hora_fin):
 
 
 def _agrupar_actividades(actividades):
-    # Agrupa por (nombre, tipo, descripcion, enlace). Cada grupo trae sus horarios
-    # y la unión deduplicada de sus fotos.
+    # Agrupa las filas que comparten (nombre, tipo, descripcion, enlace).
+    # Cada grupo junta sus horarios, fotos sin repetir y los ids de actividad.
     grupos = {}
     rutas_por_grupo = {}
 
@@ -211,6 +278,7 @@ def _agrupar_actividades(actividades):
                 'enlace': act.enlace,
                 'horarios': [],
                 'fotos': [],
+                'actividad_ids': [],
             }
             rutas_por_grupo[clave] = set()
 
@@ -219,6 +287,7 @@ def _agrupar_actividades(actividades):
             'hora_inicio': act.hora_inicio,
             'duracion': act.duracion,
         })
+        grupos[clave]['actividad_ids'].append(act.id)
         for foto in act.fotos:
             if foto.ruta_archivo not in rutas_por_grupo[clave]:
                 rutas_por_grupo[clave].add(foto.ruta_archivo)

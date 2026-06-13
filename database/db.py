@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, Enum, ForeignKey
-from sqlalchemy.dialects.mysql import SET as MySQLSet
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, Enum, ForeignKey, func
+from sqlalchemy.dialects.mysql import SET as MySQLSet, TIMESTAMP as MySQLTimestamp
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, joinedload
 
 
@@ -86,6 +86,7 @@ class Actividad(Base):
 
     miembro = relationship("Miembro", back_populates="actividades")
     fotos = relationship("Foto", back_populates="actividad", cascade="all, delete")
+    comentarios = relationship("Comentario", back_populates="actividad", cascade="all, delete")
 
     @property
     def dias_ordenados(self):
@@ -104,6 +105,19 @@ class Foto(Base):
     actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
 
     actividad = relationship("Actividad", back_populates="fotos")
+
+
+class Comentario(Base):
+    """Comentarios de actividades (tabla nueva de la Tarea 3)."""
+    __tablename__ = 'comentario'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(MySQLTimestamp, nullable=False, default=datetime.now)
+    actividad_id = Column(Integer, ForeignKey('actividad.id'), nullable=False)
+
+    actividad = relationship("Actividad", back_populates="comentarios")
 
 
 # --- Funciones de acceso a la BD ---
@@ -209,3 +223,144 @@ def crear_miembro_con_actividades(datos_miembro, lista_actividades):
     miembro_id = miembro.id
     session.close()
     return miembro_id
+
+
+# --- Funciones agregadas en Tarea 3: comentarios y estadísticas ---
+
+def actividad_existe(actividad_id):
+    """True si existe una actividad con ese id."""
+    session = SessionLocal()
+    existe = session.query(Actividad.id).filter(Actividad.id == actividad_id).first() is not None
+    session.close()
+    return existe
+
+
+def crear_comentario(actividad_id, nombre, texto):
+    """Inserta un comentario y lo devuelve como dict para responderlo al cliente."""
+    session = SessionLocal()
+    c = Comentario(
+        actividad_id=actividad_id,
+        nombre=nombre,
+        texto=texto,
+        fecha=datetime.now(),
+    )
+    session.add(c)
+    session.commit()
+    data = {
+        "id": c.id,
+        "nombre": c.nombre,
+        "texto": c.texto,
+        "fecha": c.fecha.strftime("%d-%m-%Y %H:%M"),
+        "actividad_id": c.actividad_id,
+    }
+    session.close()
+    return data
+
+
+def get_comentarios_por_actividad(actividad_id):
+    """Comentarios de una actividad, en orden cronológico."""
+    session = SessionLocal()
+    coms = (
+        session.query(Comentario)
+        .filter(Comentario.actividad_id == actividad_id)
+        .order_by(Comentario.fecha.asc(), Comentario.id.asc())
+        .all()
+    )
+    result = [
+        {
+            "id": c.id,
+            "nombre": c.nombre,
+            "texto": c.texto,
+            "fecha": c.fecha.strftime("%d-%m-%Y %H:%M"),
+            "actividad_id": c.actividad_id,
+        }
+        for c in coms
+    ]
+    session.close()
+    return result
+
+
+def get_comentarios_de_actividades(actividad_ids):
+    """Comentarios de varias actividades a la vez, en orden cronológico."""
+    if not actividad_ids:
+        return []
+    session = SessionLocal()
+    coms = (
+        session.query(Comentario)
+        .filter(Comentario.actividad_id.in_(list(actividad_ids)))
+        .order_by(Comentario.fecha.asc(), Comentario.id.asc())
+        .all()
+    )
+    result = [
+        {
+            "id": c.id,
+            "nombre": c.nombre,
+            "texto": c.texto,
+            "fecha": c.fecha.strftime("%d-%m-%Y %H:%M"),
+            "actividad_id": c.actividad_id,
+        }
+        for c in coms
+    ]
+    session.close()
+    return result
+
+
+def get_miembros_por_dia():
+    """Miembros registrados por día para el gráfico de líneas.
+    Los días sin registros se rellenan con 0 para que la línea no salte fechas."""
+    session = SessionLocal()
+    filas = (
+        session.query(
+            func.date(Miembro.fecha_registro).label("fecha"),
+            func.count(Miembro.id).label("total"),
+        )
+        .group_by(func.date(Miembro.fecha_registro))
+        .order_by(func.date(Miembro.fecha_registro).asc())
+        .all()
+    )
+    session.close()
+
+    if not filas:
+        return []
+
+    # Rellenar días sin registros con 0 entre la primera y última fecha vista.
+    por_fecha = {str(f.fecha): int(f.total) for f in filas}
+    fechas_ordenadas = sorted(por_fecha.keys())
+    inicio = datetime.strptime(fechas_ordenadas[0], "%Y-%m-%d").date()
+    fin = datetime.strptime(fechas_ordenadas[-1], "%Y-%m-%d").date()
+
+    result = []
+    actual = inicio
+    while actual <= fin:
+        clave = actual.strftime("%Y-%m-%d")
+        result.append({"fecha": clave, "total": por_fecha.get(clave, 0)})
+        actual = actual.fromordinal(actual.toordinal() + 1)
+    return result
+
+
+def get_actividades_por_tipo():
+    """[{tipo: '...', total: N}] para el gráfico de torta."""
+    session = SessionLocal()
+    filas = (
+        session.query(Actividad.tipo, func.count(Actividad.id).label("total"))
+        .group_by(Actividad.tipo)
+        .order_by(func.count(Actividad.id).desc())
+        .all()
+    )
+    session.close()
+    return [{"tipo": tipo, "total": int(total)} for tipo, total in filas]
+
+
+def get_actividades_por_comuna():
+    """Total de actividades por comuna (solo comunas con miembros registrados)."""
+    session = SessionLocal()
+    filas = (
+        session.query(Comuna.nombre, func.count(Actividad.id).label("total"))
+        .join(Miembro, Miembro.comuna_id == Comuna.id)
+        .join(Actividad, Actividad.miembro_id == Miembro.id)
+        .group_by(Comuna.id, Comuna.nombre)
+        .order_by(func.count(Actividad.id).desc())
+        .all()
+    )
+    session.close()
+    return [{"comuna": nombre, "total": int(total)} for nombre, total in filas]

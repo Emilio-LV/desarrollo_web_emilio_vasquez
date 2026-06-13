@@ -338,13 +338,27 @@ def get_miembros_por_dia():
     return result
 
 
+# Una actividad puede estar en varias filas (una por horario). Para contar
+# actividades y no filas, contamos combinaciones distintas de estos campos,
+# que son los mismos con que se agrupa una actividad en el detalle del miembro.
+def _actividad_distinta():
+    return func.count(func.distinct(func.concat_ws(
+        '|',
+        Actividad.miembro_id,
+        Actividad.nombre,
+        Actividad.tipo,
+        Actividad.descripcion,
+        Actividad.enlace,
+    )))
+
+
 def get_actividades_por_tipo():
     """[{tipo: '...', total: N}] para el gráfico de torta."""
     session = SessionLocal()
     filas = (
-        session.query(Actividad.tipo, func.count(Actividad.id).label("total"))
+        session.query(Actividad.tipo, _actividad_distinta().label("total"))
         .group_by(Actividad.tipo)
-        .order_by(func.count(Actividad.id).desc())
+        .order_by(_actividad_distinta().desc())
         .all()
     )
     session.close()
@@ -355,11 +369,11 @@ def get_actividades_por_comuna():
     """Total de actividades por comuna (solo comunas con miembros registrados)."""
     session = SessionLocal()
     filas = (
-        session.query(Comuna.nombre, func.count(Actividad.id).label("total"))
+        session.query(Comuna.nombre, _actividad_distinta().label("total"))
         .join(Miembro, Miembro.comuna_id == Comuna.id)
         .join(Actividad, Actividad.miembro_id == Miembro.id)
         .group_by(Comuna.id, Comuna.nombre)
-        .order_by(func.count(Actividad.id).desc())
+        .order_by(_actividad_distinta().desc())
         .all()
     )
     session.close()

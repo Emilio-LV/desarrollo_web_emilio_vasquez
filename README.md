@@ -16,6 +16,13 @@ bibliotecas sugeridas en el enunciado.
 Detalle del gráfico de líneas: los días sin registros entre el primero y el último
 se rellenan con 0, para que el eje X no salte fechas.
 
+Detalle de los gráficos de torta y barras: como una misma actividad puede estar
+guardada en varias filas (una por horario, ver sección de base de datos), estos
+gráficos cuentan **actividades** y no filas. Es decir, un Futbol que se juega sábado
+y domingo cuenta como 1, igual que en el detalle del miembro. Para esto las
+consultas usan `COUNT(DISTINCT ...)` sobre los campos que identifican a una
+actividad (miembro, nombre, tipo, descripción y enlace).
+
 ## Comentarios
 
 En el detalle de un miembro, cada actividad muestra sus comentarios y un formulario

@@ -1,91 +1,61 @@
-# Tarea 3 — CC5002 Desarrollo de Aplicaciones Web
+# Tarea 4 — CC5002 (Buscador de actividades y notas)
 
-Continuación de la Tarea 2 (Flask + MySQL + SQLAlchemy). En esta entrega se agregan
-la página de estadísticas con 3 gráficos y los comentarios en las actividades.
+Esta entrega agrega dos funcionalidades nuevas — un **buscador de actividades** y un
+sistema de **notas (1–7)** — implementadas en **Spring Boot + JPA**, como pide el
+enunciado. El **resto de la aplicación (registro, listado, estadísticas y comentarios)
+se mantiene tal cual de la Tarea 3 en Flask**, sin cambios. Ambas comparten la misma
+base de datos MySQL `tarea2`.
 
-## Gráficos
+## Estructura del repositorio
 
-Los gráficos se generan en el lado del cliente, como pide el enunciado. El servidor
-solo entrega los datos: hay 3 URLs (`/api/stats/...`) que responden JSON con el
-formato `{status: "ok", data: [...]}`. Al cargar la página de estadísticas,
-`static/js/estadisticas.js` hace un `fetch` a cada URL y dibuja con la biblioteca
-**Highcharts** (https://www.highcharts.com), que se carga desde su CDN oficial,
-por lo que se necesita conexión a internet para ver los gráficos. Es una de las
-bibliotecas sugeridas en el enunciado.
+- **Raíz** (`app.py`, `database/`, `templates/`, `static/`, `utils/`): la app **Flask**
+  de la Tarea 3, sin cambios. Corre en `http://localhost:5000`.
+- **`buscador/`**: el proyecto **Spring Boot** nuevo (buscador + notas). Corre en
+  `http://localhost:8080`. Tiene su propio `README.md` con más detalle.
 
-Detalle del gráfico de líneas: los días sin registros entre el primero y el último
-se rellenan con 0, para que el eje X no salte fechas.
+## Arquitectura (importante para la corrección)
 
-Detalle de los gráficos de torta y barras: como una misma actividad puede estar
-guardada en varias filas (una por horario, ver sección de base de datos), estos
-gráficos cuentan **actividades** y no filas. Es decir, un Futbol que se juega sábado
-y domingo cuenta como 1, igual que en el detalle del miembro. Para esto las
-consultas usan `COUNT(DISTINCT ...)` sobre los campos que identifican a una
-actividad (miembro, nombre, tipo, descripción y enlace).
+| Parte | Tecnología | Puerto |
+|-------|------------|--------|
+| Registro, listado, estadísticas, comentarios | Flask (Python) | `:5000` |
+| **Buscador + notas (nuevo)** | **Spring Boot 3.5 + JPA + Thymeleaf** | `:8080` |
 
-## Comentarios
+El buscador es una página servida por Spring Boot; su JavaScript hace las llamadas
+asíncronas (`fetch`) a los endpoints del mismo servidor. Las dos apps corren a la vez y
+comparten la base `tarea2`. Se eligió esta separación porque Flask y Spring Boot son dos
+servidores distintos: así "lo nuevo" queda en Spring Boot y el resto intacto.
 
-En el detalle de un miembro, cada actividad muestra sus comentarios y un formulario
-para agregar uno nuevo. Las dos cosas se hacen con `fetch` (llamadas asíncronas),
-sin recargar la página:
+## Funcionalidades nuevas
 
-- Al cargar la página, `static/js/comentarios.js` pide los comentarios de cada
-  actividad a `GET /api/comentarios`.
-- Al enviar el formulario, se valida primero en JavaScript; si pasa, se hace
-  `POST /api/comentarios`. El servidor vuelve a validar e inserta en la tabla
-  `comentario`. Si hay errores, responde 400 y los mensajes se muestran junto a
-  cada campo, manteniendo el formulario visible con lo que el usuario escribió.
+1. **Buscador.** Un único input; al escribir 3 o más caracteres busca automáticamente las
+   actividades cuyo **nombre, descripción o comuna** contienen el patrón, lo **destaca**
+   con `<mark>` y muestra miembro, día, tipo, comuna, nombre y descripción. Si no hay
+   resultados, muestra un mensaje.
+2. **Nota.** Cada resultado muestra el **promedio** (o `-` si no tiene) y un **contador**.
+   El botón "Evaluar" despliega un selector **1–7**; al elegir, se guarda la nota de forma
+   **asíncrona** y se recalculan promedio y contador sin recargar la página.
 
-**Decisión importante**: en mi modelo de datos, una actividad que se muestra como
-un solo bloque puede estar guardada en varias filas de la tabla `actividad`
-(una por cada horario distinto, ver sección siguiente). Como la FK del script del
-enunciado apunta a una fila de `actividad`, decidí que los comentarios se **leen**
-de todas las filas del bloque (`?actividad_ids=1,2`) pero se **insertan** asociados
-a la primera fila del grupo. Así se respeta el script sin perder comentarios.
+## Decisiones de diseño
 
-## Base de datos: todos los cambios
+- **Tabla `nota`** creada con `tabla-nota.sql` del enunciado (incluida como
+  `buscador/src/main/resources/schema.sql`). La nota mostrada es el promedio de las
+  evaluaciones de la actividad.
+- **Agrupación por actividad.** Una actividad guardada en varias filas (una por día) se
+  junta en un solo resultado con los días juntos, y la nota es el promedio de todas sus
+  filas. Es la misma decisión que se tomó con los comentarios en la Tarea 3.
+- **JPA solo lee** las tablas existentes (`spring.jpa.hibernate.ddl-auto=none`, no modifica
+  el esquema). La nota se **valida como entero 1–7** en cliente y servidor. La búsqueda usa
+  **JPQL con parámetros** (sin inyección SQL) y los resultados se pintan con `textContent`
+  y `<mark>` (sin XSS). El HTML5 y el CSS pasan los validadores de W3C sin errores.
 
-1. **Tabla `comentario` (nueva en esta tarea)**: es el script `tabla-comentario.sql`
-   adjunto al enunciado, sin modificaciones, integrado al final de
-   `database/tarea2.sql`. Columnas: `id`, `nombre` (80), `texto` (300), `fecha`
-   (TIMESTAMP) y `actividad_id` con FK a `actividad.id`. En `database/db.py` se
-   agregó el modelo `Comentario` y la relación con `Actividad`.
+(Más detalle del buscador en `buscador/README.md`.)
 
-2. **Cambios que vienen de mi Tarea 2 y se mantienen** (el enunciado de la T2
-   permitía ajustar el modelo propuesto):
-   - La tabla `miembro` tiene una columna `tipo` (pregrado, postgrado, funcionario,
-     academico) y columnas opcionales que dependen del tipo (año de ingreso,
-     programa, cargo, departamento, etc.).
-   - En la tabla `actividad`, la columna `dia` es un `SET` en vez de un `ENUM`:
-     una misma fila puede guardar varios días si comparten horario. Por eso una
-     actividad con horarios distintos genera más de una fila.
+## Cómo ejecutar el buscador
 
-3. **Fecha de los comentarios**: se inserta desde Python con `datetime.now()`
-   en vez de dejar que MySQL la complete, para poder devolverla al cliente en la
-   misma respuesta del POST.
+Requisitos: **JDK 17+** y **MySQL** con la base `tarea2` (la misma de la Tarea 3).
 
-Para crear todo desde cero: ejecutar en orden `database/create_user.sql`,
-`database/tarea2.sql` (ya incluye `comentario`) y `database/region-comuna.sql`.
+1. `cd buscador`
+2. `./mvnw spring-boot:run`  · en Windows: `mvnw.cmd spring-boot:run`
+3. Abrir `http://localhost:8080/`
 
-## Validaciones y seguridad
-
-- Doble validación: JavaScript en el cliente (aviso rápido al usuario, se puede
-  saltar) y `utils/validations.py` en el servidor (la que protege de verdad).
-  Las reglas del comentario son las del enunciado: nombre de 3 a 80 caracteres,
-  texto de mínimo 5 (y máximo 300 por el largo de la columna).
-- El servidor también verifica que la actividad del comentario exista.
-- Los comentarios se pintan en el navegador con `textContent` (nunca `innerHTML`),
-  así un comentario con HTML o scripts se muestra como texto y no se ejecuta.
-- Las consultas usan SQLAlchemy con parámetros, lo que evita inyección SQL.
-
-## Cómo correr el proyecto
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python app.py
-```
-
-La aplicación queda en `http://127.0.0.1:5000/`. Requiere MySQL corriendo en
-localhost:3306 con la base `tarea2` (credenciales del enunciado: usuario `cc5002`).
+La app Flask se levanta como siempre: `python app.py`, en `http://localhost:5000`.

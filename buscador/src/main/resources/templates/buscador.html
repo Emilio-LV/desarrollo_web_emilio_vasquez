@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Buscador de actividades</title>
+    <link rel="stylesheet" href="/css/buscador.css?v=3">
+  </head>
+  <body>
+    <header class="cabecera">
+      <h1>Buscador de actividades extraprogramáticas</h1>
+    </header>
+
+    <main class="contenedor">
+      <form id="form-buscar" class="form-buscar" role="search">
+        <label for="q">Buscar actividad (por nombre, descripción o comuna)</label>
+        <input type="search" id="q" name="q" minlength="3" autocomplete="off"
+               placeholder="Escribe al menos 3 caracteres…" aria-describedby="ayuda">
+        <p id="ayuda" class="ayuda">La búsqueda comienza automáticamente al escribir 3 caracteres.</p>
+      </form>
+
+      <p id="estado" class="estado" role="status"></p>
+
+      <div id="resultados" class="resultados"></div>
+    </main>
+
+    <script src="/js/buscador.js?v=3"></script>
+  </body>
+</html>

@@ -1,0 +1,146 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #1d2433;
+  background-color: #f4f6fb;
+  line-height: 1.5;
+}
+
+.cabecera {
+  background-color: #1f3a5f;
+  color: #ffffff;
+  padding: 1.25rem 1rem;
+}
+
+.cabecera h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.contenedor {
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.form-buscar {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-buscar label {
+  font-weight: bold;
+  margin-bottom: 0.35rem;
+}
+
+#q {
+  width: 100%;
+  max-width: 32rem;
+  padding: 0.6rem 0.7rem;
+  font-size: 1rem;
+  border: 1px solid #9aa6bd;
+  border-radius: 6px;
+}
+
+#q:focus {
+  outline: 3px solid #1f6feb;
+  outline-offset: 1px;
+}
+
+.ayuda {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: #4a5568;
+}
+
+.estado {
+  min-height: 1.4rem;
+  margin: 0.5rem 0 1rem;
+  font-weight: bold;
+  color: #1f3a5f;
+}
+
+.resultados {
+  display: block;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+caption {
+  text-align: left;
+  font-weight: bold;
+  padding: 0.5rem 0;
+}
+
+th,
+td {
+  border: 1px solid #d4dae6;
+  padding: 0.55rem 0.65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+thead th {
+  background-color: #e7edf7;
+  white-space: nowrap;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f7f9fc;
+}
+
+mark {
+  background-color: #ffe27a;
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 3px;
+}
+
+.valor-nota {
+  font-weight: bold;
+}
+
+.contador-notas {
+  color: #4a5568;
+}
+
+.btn-evaluar {
+  margin-top: 0.3rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.9rem;
+  color: #ffffff;
+  background-color: #1f6feb;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-evaluar:hover {
+  background-color: #1a5fd0;
+}
+
+.btn-evaluar:focus {
+  outline: 3px solid #0b3d91;
+  outline-offset: 1px;
+}
+
+.evaluar-control label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.evaluar-control select {
+  padding: 0.3rem;
+  font-size: 0.9rem;
+}
